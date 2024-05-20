@@ -4,8 +4,26 @@
     full-calendar {
       width: calc(100vw - 20px);
       height: calc(100vh - 20px);
+      .custom-event {
+
+      }
     }
   }
 </style>
 
-<full-calendar [options]="calendarOptions"></full-calendar>
+
+<full-calendar [options]="calendarOptions">
+  <ng-template #eventContent let-arg>
+    <div class="custom-event">
+      @if (arg.event.display !== 'background') {
+        <app-fullcalendar-event [event]="arg.event" nz-tooltip nzTooltipPlacement="topLeft" [nzTooltipTitle]="titleTemplate" [nzTooltipTitleContext]="{$implicit: arg.event}"/>
+      }
+    </div>
+  </ng-template>
+
+  <ng-template #titleTemplate let-event>
+    <p>
+      <span>{{ event.title }}</span>
+    </p>
+  </ng-template>
+</full-calendar>

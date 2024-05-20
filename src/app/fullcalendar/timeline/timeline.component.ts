@@ -5,21 +5,20 @@ import {FullCalendarModule} from "@fullcalendar/angular";
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import {faker} from "@faker-js/faker";
 import interactionPlugin, { Draggable } from '@fullcalendar/interaction';
+import {FullcalendarModule} from "../fullcalendar.module";
 
 @Component({
   selector: 'app-timeline',
-  standalone: true,
-  imports: [
-    FullCalendarModule
-  ],
   templateUrl: './timeline.component.html',
   styleUrl: './timeline.component.less'
 })
 export class TimelineComponent {
+  start?: number;
+
   calendarOptions: CalendarOptions = {
     events: async function (option: EventSourceFuncArg) {
 
-      return new Array(1000).fill(1).map((_, index) => {
+      const res = new Array(1000).fill(1).map((_, index) => {
         const resourceId = Math.floor(Math.random() * 400) + 1;
 
         const date = faker.date.between({
@@ -34,7 +33,7 @@ export class TimelineComponent {
         const locked = index % 20 === 0;
 
         return {
-          display: locked ? 'background' : undefined,
+          display: locked ? 'background' : null,
           extendedProps: {},
           start: date,
           end: end,
@@ -47,6 +46,10 @@ export class TimelineComponent {
           interactive: true,
         };
       });
+
+      console.info(res.length);
+
+      return res;
     },
     initialView: 'resourceTimeline',
     plugins: [
@@ -62,6 +65,14 @@ export class TimelineComponent {
         venue_id: venueId,
         venueTitle: `Venue ${venueId + 1}`
       };
-    })
+    }),
+    eventDragStop: (info) => {
+      this.start = Date.now();
+    },
+    eventDrop: (info) => {
+      if (this.start) {
+        alert(`Time taken: ${Date.now() - this.start}ms`);
+      }
+    }
   };
 }
